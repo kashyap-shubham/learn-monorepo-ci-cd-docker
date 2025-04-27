@@ -1,0 +1,33 @@
+# when on code change in main it should build the docker image 
+# it should push the image to docker hub 
+# it needs to ssh into our VM and start the new image 
+
+name: Deploy the backend 
+on: 
+  push: 
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2     # it is used to checkout the code in github action vm if you want to build, test, lint, or deploy your code in the CI/CD pipeline, you need to first check out the repo
+
+      - name: Docker login
+        uses: docker/login-action@v2    # it is used to login in docker hub account
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v4   # it is used to build the docker image and push it to dockerhub
+        with:
+          context: .
+          file: ./docker/Dockerfile.backend
+          push: true
+          tags: kashyapshubham/user-app-backend:${{ github.sha }}    # it must contain your dockerhub username/<your app name:tag> 
+
+      # now from here we write the jobs to deploy builded image to vm once image is deployed to docker hub
+      - name: Deploy to VM
+        run: |
+        

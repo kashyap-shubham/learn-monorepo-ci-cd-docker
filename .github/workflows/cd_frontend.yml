@@ -24,6 +24,8 @@ jobs:
         with:
           context: .
           file: ./docker/Dockerfile.frontend
+          build-args:
+            - DATABASE_URL=${{ secrets.DATABASE_URL }}
           push: true
           tags: kashyapshubham/user-app-frontend:${{ github.sha }}    # it must contain your dockerhub username/<your app name:tag> 
     
